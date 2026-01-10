@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es2020", 
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "rootDir": "./src",
+        "skipLibCheck": true,
+        "strict": true,
+        "sourceMap": true,
+        "outDir": "./dist"
+    },
+    "include": ["./src/**/*.ts"],
+    "exclude": ["node_modules"]
+}
