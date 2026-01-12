@@ -3,26 +3,26 @@ process.loadEnvFile();
 export function envOrThrow(key: string) {
     const val = process.env[key];
     if (!val) throw new Error(`Environment variable ${key} is not set`);
-    
+
     return val;
 }
 
 type Config = {
     eth: {
-        rpc: string
-        sequencerAddress: string,
-        multiCallAddress: string,
-        catchUpDepth: number,
-        batchPullAmount: number,
-        rateLimitingDelay: number
-    },
+        rpc: string;
+        sequencerAddress: string;
+        multiCallAddress: string;
+        catchUpDepth: number;
+        batchPullAmount: number;
+        rateLimitingDelay: number;
+    };
     alerts: {
-        discordWH?: string,
-        slackWH?: string, 
-    }
-}
+        discordWH?: string;
+        slackWH?: string;
+    };
+};
 
-const MULTICALL_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11';
+const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
 export const config: Config = {
     eth: {
         rpc: envOrThrow("ETH_RPC"),
@@ -30,11 +30,10 @@ export const config: Config = {
         multiCallAddress: MULTICALL_ADDRESS,
         catchUpDepth: Number(process.env["BATCH_PULL_AMOUNT"]) || 0,
         batchPullAmount: Number(process.env["BATCH_PULL_AMOUNT"]) || 20,
-        rateLimitingDelay: Number(process.env["RATE_LIMITING_DELAY"]) || 0
+        rateLimitingDelay: Number(process.env["RATE_LIMITING_DELAY"]) || 0,
     },
     alerts: {
         discordWH: process.env["DISCORD_WEBHOOK"],
-        slackWH: process.env["SLACK_WEBHOOK"]
-    }
-}
-
+        slackWH: process.env["SLACK_WEBHOOK"],
+    },
+};

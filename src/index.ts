@@ -1,10 +1,9 @@
+import { AlertMannager } from "./alerts/AlertMannager.js";
+import { EthProvider } from "./eth/EthProvider.js";
+import { catchUp } from "./worker/catchUp.js";
+import { findJobInBlock, handleFoundJob } from "./worker/jobs.js";
 
-import { EthProvider } from './eth/EthProvider.js';
-import { findJobInBlock, handleFoundJob } from './worker/jobs.js';
-import { catchUp } from './worker/catchUp.js';
-import { AlertMannager } from './alerts/AlertMannager.js';
-
-async function main(){
+async function main() {
     const eth = await EthProvider.getInstance();
     const provider = eth.getProvider();
 
@@ -12,8 +11,8 @@ async function main(){
     AlertMannager.getInstance();
 
     const latestBlock = await catchUp(provider);
-    console.log(` --- CatchUp Phase Completed - Latest Inspected Block ${latestBlock} ---`)
-    
+    console.log(` --- CatchUp Phase Completed - Latest Inspected Block ${latestBlock} ---`);
+
     provider.on("block", async (blockNumber) => {
         console.log(`Incomming block: ${blockNumber} - Inspecting...`);
         const block = await provider.getBlock(blockNumber, true);
@@ -26,9 +25,7 @@ async function main(){
     });
 }
 
-main()
-    .catch((err)=>{
-        console.log(err);
-        process.exit(1)
-    })
-
+main().catch((err) => {
+    console.log(err);
+    process.exit(1);
+});

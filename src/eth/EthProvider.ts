@@ -1,4 +1,5 @@
 import { ethers, JsonRpcProvider } from "ethers";
+
 import { config } from "../config.js";
 
 export class EthProvider {

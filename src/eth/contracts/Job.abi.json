@@ -1,20 +1,20 @@
 [
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "network",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "args",
-        "type": "bytes"
-      }
-    ],
-    "name": "work",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "network",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes",
+                "name": "args",
+                "type": "bytes"
+            }
+        ],
+        "name": "work",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
 ]
