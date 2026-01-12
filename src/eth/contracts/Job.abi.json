@@ -1,14 +1,20 @@
 [
   {
     "inputs": [
-      { "internalType": "bytes32", "name": "network", "type": "bytes32" }
+      {
+        "internalType": "bytes32",
+        "name": "network",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "args",
+        "type": "bytes"
+      }
     ],
-    "name": "workable",
-    "outputs": [
-      { "internalType": "bool", "name": "", "type": "bool" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
-    ],
-    "stateMutability": "view",
+    "name": "work",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

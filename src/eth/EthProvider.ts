@@ -9,7 +9,6 @@ export class EthProvider {
 
     static async getInstance(): Promise<EthProvider> {
         if (EthProvider.instance) return EthProvider.instance;
-
         const instance = new EthProvider();
         await instance.init();
 
@@ -19,13 +18,11 @@ export class EthProvider {
 
     private async init() {
         const { rpc } = config.eth;
-
         const provider = new ethers.JsonRpcProvider(rpc);
+        this.provider = provider;
 
         // Check RPC Connection
         await provider.send("eth_chainId", []);
-
-        this.provider = provider;
     }
 
     getProvider(): JsonRpcProvider {

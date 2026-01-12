@@ -5,7 +5,6 @@ import JobAbi from "./Job.abi.json" with { type: "json" };
 import { config } from "../../config.js";
 import { JsonRpcProvider } from "ethers";
 
-const {sequencerAddress, multiCallAddress} = config.eth
 const ContractAbiMapping = {
     'SEQUENCER': SequencerAbi,
     'MULTICALL': MultiCall3Abi,

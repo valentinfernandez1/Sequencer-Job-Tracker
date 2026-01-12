@@ -10,9 +10,15 @@ export function envOrThrow(key: string) {
 type Config = {
     eth: {
         rpc: string
-        blockConfirmations: number
         sequencerAddress: string,
         multiCallAddress: string,
+        catchUpDepth: number,
+        batchPullAmount: number,
+        rateLimitingDelay: number
+    },
+    alerts: {
+        discordWH?: string,
+        slackWH?: string, 
     }
 }
 
@@ -20,8 +26,15 @@ const MULTICALL_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11';
 export const config: Config = {
     eth: {
         rpc: envOrThrow("ETH_RPC"),
-        blockConfirmations: Number(envOrThrow("BLOCK_CONFIRMATIONS")),
         sequencerAddress: envOrThrow("SEQUENCER_ADDRESS"),
         multiCallAddress: MULTICALL_ADDRESS,
+        catchUpDepth: Number(process.env["BATCH_PULL_AMOUNT"]) || 0,
+        batchPullAmount: Number(process.env["BATCH_PULL_AMOUNT"]) || 20,
+        rateLimitingDelay: Number(process.env["RATE_LIMITING_DELAY"]) || 0
+    },
+    alerts: {
+        discordWH: process.env["DISCORD_WEBHOOK"],
+        slackWH: process.env["SLACK_WEBHOOK"]
     }
 }
+
