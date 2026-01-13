@@ -1,11 +1,14 @@
 import { Block, JsonRpcProvider } from "ethers";
 
 import { config } from "../config.js";
+import { MetricsMannager } from "../metrics/MetricsMannager.js";
 import { findJobInBlock, handleFoundJob } from "./jobs.js";
+
+const metrics = MetricsMannager.getInstance();
 
 export async function catchUp(provider: JsonRpcProvider): Promise<number> {
     let latestBlock = await provider.getBlockNumber();
-    let currentBlock = 24215212; //latestBlock - config.eth.catchUpDepth;
+    let currentBlock = latestBlock - config.eth.catchUpDepth;
 
     const startTime = Date.now();
     const startBlock = currentBlock;
@@ -41,6 +44,8 @@ export async function catchUp(provider: JsonRpcProvider): Promise<number> {
 
         currentBlock += amountBlocks;
 
+        metrics.currentBlockGauge.set(currentBlock);
+
         // When it arrives at the last iteration, it must
         // update the latestBlock number to ensure the HEAD
         // that it is aiming to catch up to is the correct one.
@@ -72,9 +77,11 @@ async function bulkInspectBlock(provider: JsonRpcProvider, blocks: (Block | null
     for (const block of blocks) {
         if (!block) return;
         inspectPromises.push(
-            findJobInBlock(provider, block).then((maybeJob) =>
-                maybeJob ? handleFoundJob(maybeJob) : null,
-            ),
+            findJobInBlock(provider, block).then((maybeJob) => {
+                metrics.blocksProcessedCounter.inc();
+
+                return maybeJob ? handleFoundJob(maybeJob) : null;
+            }),
         );
     }
 

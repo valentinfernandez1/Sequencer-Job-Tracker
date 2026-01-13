@@ -3,6 +3,7 @@ import { Block, BlockTag, JsonRpcProvider } from "ethers";
 import { AlertMannager } from "../alerts/AlertMannager.js";
 import { config } from "../config.js";
 import { initContract } from "../eth/contracts/initContract.js";
+import { MetricsMannager } from "../metrics/MetricsMannager.js";
 
 export type Jobs = Set<string>;
 export type WorkedJob = {
@@ -79,8 +80,9 @@ export async function findJobInBlock(
 }
 
 export async function handleFoundJob(workedJob: WorkedJob) {
-    //emitAlert
-    const alertManager = AlertMannager.getInstance().emitAlerts(workedJob);
+    // Send alerts to third party webhooks
+    AlertMannager.getInstance().emitAlerts(workedJob);
 
-    //Add prometheous metric
+    // Prometheous metric
+    MetricsMannager.getInstance().jobsWorkedCounter.inc();
 }

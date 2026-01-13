@@ -12,19 +12,7 @@ export class AlertMannager {
     private discordWH!: string;
     private slackWH!: string;
 
-    private constructor() {}
-
-    static getInstance(): AlertMannager {
-        if (AlertMannager.instance) return AlertMannager.instance;
-
-        const instance = new AlertMannager();
-        instance.init();
-
-        AlertMannager.instance = instance;
-        return instance;
-    }
-
-    private init() {
+    private constructor() {
         const { discordWH, slackWH } = config.alerts;
 
         if (discordWH === undefined) {
@@ -46,6 +34,15 @@ export class AlertMannager {
                 throw new Error("Invalid Slack Web Hook URL Provided");
             this.slackWH = slackWH;
         }
+    }
+
+    static getInstance(): AlertMannager {
+        if (AlertMannager.instance) return AlertMannager.instance;
+
+        const instance = new AlertMannager();
+
+        AlertMannager.instance = instance;
+        return instance;
     }
 
     private static craftMsg(w: WorkedJob) {

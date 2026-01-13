@@ -1,8 +1,8 @@
 import { Contract, JsonRpcProvider } from "ethers";
 
-import JobAbi from "./Job.abi.json";
-import MultiCall3Abi from "./MultiCall3.abi.json";
-import SequencerAbi from "./Sequencer.abi.json";
+import JobAbi from "./Job.abi.json" with { type: "json" };
+import MultiCall3Abi from "./MultiCall3.abi.json" with { type: "json" };
+import SequencerAbi from "./Sequencer.abi.json" with{ type: "json" };
 
 const ContractAbiMapping = {
     SEQUENCER: SequencerAbi,
