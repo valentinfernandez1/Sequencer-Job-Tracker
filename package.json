@@ -10,7 +10,7 @@
         "build": "tsc",
         "start": "node dist/index.js",
         "test": "yarn build && yarn test:unit",
-        "test:unit": "vitest run",
+        "test:unit": "NODE_ENV=test vitest run",
         "test:integration": "vitest run tests/integration"
     },
     "author": "Valentin Fernandez <tinchofernandez8@gmail.com>",

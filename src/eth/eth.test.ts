@@ -2,6 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EthProvider } from "./EthProvider.js";
 
+vi.mock("../config.js", () => ({
+    config: {
+        eth: {
+            rpc: "http://localhost:8545",
+        },
+    },
+}));
+
 const sendMock = vi.fn();
 
 vi.mock("ethers", async () => {

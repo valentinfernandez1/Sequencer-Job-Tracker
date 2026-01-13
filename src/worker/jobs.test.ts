@@ -1,10 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { estimateCatchUpTime } from "./catchUp.js";
-import { handleFoundJob, WorkedJob } from "./jobs.js";
+import { handleFoundJob } from "./jobs.js";
 
 const emitAlerts = vi.fn();
 const inc = vi.fn();
+
+vi.mock("../config.js", () => ({
+    config: {
+        alerts: {},
+        metrics: { port: 9100 },
+    },
+}));
 
 vi.mock("../alerts/AlertManager.js", () => ({
     AlertManager: {

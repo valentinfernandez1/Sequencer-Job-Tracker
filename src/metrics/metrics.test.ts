@@ -33,6 +33,7 @@ describe("MetricsManager", () => {
         expect(metrics).toContain("keeper_jobs_worked_total");
         expect(metrics).toContain("keeper_current_block");
         expect(metrics).toContain("keeper_blocks_processed_total");
+        expect(metrics).toContain("keeper_validation_errors_total");
     });
 
     it("exposes /metrics endpoint", async () => {

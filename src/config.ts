@@ -1,6 +1,10 @@
 import { z, ZodError } from "zod";
 
-process.loadEnvFile();
+if (process.env.NODE_ENV !== "test") {
+    try {
+        process.loadEnvFile();
+    } catch {}
+}
 
 export const EnvSchema = z.object({
     ETH_RPC: z.url(),
@@ -41,8 +45,7 @@ let env;
 try {
     env = EnvSchema.parse(process.env);
 } catch (error) {
-    console.log(`Missing or incorrectly configured ENV variables\n${error}`);
-    process.exit(1);
+    throw new Error(`Missing or incorrectly configured ENV variables:\n${error}`);
 }
 export const config: Config = {
     eth: {
