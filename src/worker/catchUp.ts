@@ -89,7 +89,7 @@ async function bulkInspectBlock(provider: JsonRpcProvider, blocks: (Block | null
     return;
 }
 
-function estimateCatchUpTime(
+export function estimateCatchUpTime(
     currentBlock: number,
     toBlock: number,
     startTime: number,

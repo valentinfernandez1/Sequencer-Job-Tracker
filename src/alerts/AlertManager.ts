@@ -43,7 +43,6 @@ export class AlertManager {
     }
 
     static getInstance(): AlertManager {
-        console.log(config.alerts);
         if (AlertManager.instance) return AlertManager.instance;
 
         const instance = new AlertManager();

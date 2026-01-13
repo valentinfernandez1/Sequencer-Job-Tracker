@@ -15,17 +15,16 @@ vi.mock("../config.js", () => ({
 describe("MetricsManager", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-
         client.register.clear();
+
         // @ts-expect-error test reset
         MetricsManager.instance = null;
     });
 
     it("returns the same instance (Singleton)", () => {
-        const a = MetricsManager.getInstance();
-        const b = MetricsManager.getInstance();
+        const m = MetricsManager.getInstance();
 
-        expect(a).toBe(b);
+        expect(m).toBe(MetricsManager.getInstance());
     });
 
     it("Initializes metrics properly", async () => {

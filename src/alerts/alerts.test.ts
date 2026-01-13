@@ -29,9 +29,8 @@ describe("AlertManager", () => {
     it("returns the same instance (Singleton)", async () => {
         const { AlertManager } = await import("./AlertManager.js");
         const a = AlertManager.getInstance();
-        const b = AlertManager.getInstance();
 
-        expect(a).toBe(b);
+        expect(a).toBe(AlertManager.getInstance());
     });
 
     it("sends Discord and slack alerts", async () => {
