@@ -1,0 +1,33 @@
+name: PR
+on:
+    push:
+        branches: [vf/challenge]
+    pull_request:
+        branches: [main, develop]
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [20.19.0]
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: yarn
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Typecheck & build
+              run: yarn build
+
+            - name: Run unit tests
+              run: yarn test:unit
