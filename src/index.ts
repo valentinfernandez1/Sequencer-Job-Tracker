@@ -13,11 +13,10 @@ async function main() {
     const metrics = MetricsManager.getInstance();
     metrics.startServer();
 
-    const latestBlock = await catchUp(provider);
-    console.log(` --- CatchUp Phase Completed - Latest Inspected Block ${latestBlock} ---`);
+    await catchUp(provider);
 
     provider.on("block", async (blockNumber) => {
-        console.log(`Incomming block: ${blockNumber} - Inspecting...`);
+        console.log(`[ JOB_INSPECTOR ] Incomming block: ${blockNumber} - Inspecting...`);
         const block = await provider.getBlock(blockNumber, true);
 
         metrics.blocksProcessedCounter.inc();

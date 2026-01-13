@@ -1,11 +1,21 @@
+import { z, ZodError } from "zod";
+
 process.loadEnvFile();
 
-export function envOrThrow(key: string) {
-    const val = process.env[key];
-    if (!val) throw new Error(`Environment variable ${key} is not set`);
+export const EnvSchema = z.object({
+    ETH_RPC: z.url(),
 
-    return val;
-}
+    SEQUENCER_ADDRESS: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+
+    DISCORD_WEBHOOK: z.url().optional(),
+    SLACK_WEBHOOK: z.url().optional(),
+
+    CATCH_UP_DEPTH: z.coerce.number().int().nonnegative().default(0),
+    BATCH_PULL_AMOUNT: z.coerce.number().int().positive().default(20),
+    RATE_LIMITING_DELAY: z.coerce.number().int().nonnegative().default(0),
+
+    PROMETHEUS_METRIC_PORT: z.coerce.number().int().min(1).max(65535).default(9100),
+});
 
 type Config = {
     eth: {
@@ -26,20 +36,28 @@ type Config = {
 };
 
 const MULTICALL_ADDRESS = "0xcA11bde05977b3631167028862bE2a173976CA11";
+
+let env;
+try {
+    env = EnvSchema.parse(process.env);
+} catch (error) {
+    console.log(`Missing or incorrectly configured ENV variables\n${error}`);
+    process.exit(1);
+}
 export const config: Config = {
     eth: {
-        rpc: envOrThrow("ETH_RPC"),
-        sequencerAddress: envOrThrow("SEQUENCER_ADDRESS"),
+        rpc: env.ETH_RPC,
+        sequencerAddress: env.SEQUENCER_ADDRESS,
         multiCallAddress: MULTICALL_ADDRESS,
-        catchUpDepth: Number(process.env["CATCH_UP_DEPTH"]) || 0,
-        batchPullAmount: Number(process.env["BATCH_PULL_AMOUNT"]) || 20,
-        rateLimitingDelay: Number(process.env["RATE_LIMITING_DELAY"]) || 0,
+        catchUpDepth: env.CATCH_UP_DEPTH,
+        batchPullAmount: env.BATCH_PULL_AMOUNT,
+        rateLimitingDelay: env.RATE_LIMITING_DELAY,
     },
     alerts: {
-        discordWH: process.env["DISCORD_WEBHOOK"],
-        slackWH: process.env["SLACK_WEBHOOK"],
+        discordWH: env.DISCORD_WEBHOOK,
+        slackWH: env.SLACK_WEBHOOK,
     },
     metrics: {
-        port: Number(process.env["PROMETHEUS_METRIC_PORT"]) || 9100,
+        port: env.PROMETHEUS_METRIC_PORT,
     },
 };

@@ -6,7 +6,7 @@ import { findJobInBlock, handleFoundJob } from "./jobs.js";
 
 const metrics = MetricsManager.getInstance();
 
-export async function catchUp(provider: JsonRpcProvider): Promise<number> {
+export async function catchUp(provider: JsonRpcProvider): Promise<void> {
     let latestBlock = await provider.getBlockNumber();
     let currentBlock = latestBlock - config.eth.catchUpDepth;
 
@@ -23,13 +23,13 @@ export async function catchUp(provider: JsonRpcProvider): Promise<number> {
         const eta = estimateCatchUpTime(currentBlock, latestBlock, startTime, startBlock);
 
         console.log(
-            `Catching Up (${currentBlock}/${latestBlock}) - Pulling ${amountBlocks} Blocks - ETA: ${eta} secs`,
+            `[ CATCH_UP ] Catching Up (${currentBlock}/${latestBlock}) - Pulling ${amountBlocks} Blocks - ETA: ${eta} secs`,
         );
 
         const blocks = await bulkPullBlocks(provider, currentBlock, amountBlocks);
 
         console.log(
-            `Blocks (${currentBlock}/${
+            `[ CATCH_UP ] Blocks (${currentBlock}/${
                 currentBlock + amountBlocks
             }) Received - Inspecting for Job transactions`,
         );
@@ -53,7 +53,9 @@ export async function catchUp(provider: JsonRpcProvider): Promise<number> {
             latestBlock = await provider.getBlockNumber();
         }
     }
-    return latestBlock;
+
+    console.log(` --- [ CATCH_UP ] Phase Completed - Latest Inspected Block ${latestBlock} ---`);
+    return;
 }
 
 async function bulkPullBlocks(
@@ -106,5 +108,5 @@ export function estimateCatchUpTime(
     const msPerBlock = elapsedMs / processedBlocks;
     const remainingMs = remainingBlocks * msPerBlock;
 
-    return Math.ceil(remainingMs / 1000); // seconds
+    return Math.ceil(remainingMs / 1000);
 }

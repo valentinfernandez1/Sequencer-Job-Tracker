@@ -1,4 +1,5 @@
 import { Block, BlockTag, JsonRpcProvider } from "ethers";
+import { z } from "zod";
 
 import { AlertManager } from "../alerts/AlertManager.js";
 import { config } from "../config.js";
@@ -6,11 +7,14 @@ import { initContract } from "../eth/contracts/initContract.js";
 import { MetricsManager } from "../metrics/MetricsManager.js";
 
 export type Jobs = Set<string>;
-export type WorkedJob = {
-    address: string;
-    blockNumber: number;
-    network: string;
-};
+
+export const WorkedJobSchema = z.object({
+    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+    blockNumber: z.number().int().nonnegative(),
+    network: z.string().min(1),
+});
+
+export type WorkedJob = z.infer<typeof WorkedJobSchema>;
 
 export async function findActiveJobs(provider: JsonRpcProvider, blockTag: BlockTag): Promise<Jobs> {
     const { sequencerAddress, multiCallAddress } = config.eth;
@@ -76,7 +80,7 @@ export async function findJobInBlock(
         break;
     }
 
-    return workedJob;
+    return WorkedJobSchema.parse(workedJob);
 }
 
 export async function handleFoundJob(workedJob: WorkedJob) {
