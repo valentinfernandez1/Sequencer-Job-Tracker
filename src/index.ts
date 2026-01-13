@@ -1,6 +1,6 @@
-import { AlertMannager } from "./alerts/AlertMannager.js";
+import { AlertManager } from "./alerts/AlertManager.js";
 import { EthProvider } from "./eth/EthProvider.js";
-import { MetricsMannager } from "./metrics/MetricsMannager.js";
+import { MetricsManager } from "./metrics/MetricsManager.js";
 import { catchUp } from "./worker/catchUp.js";
 import { findJobInBlock, handleFoundJob } from "./worker/jobs.js";
 
@@ -9,8 +9,8 @@ async function main() {
     const provider = eth.getProvider();
 
     // Initialize AlertManager (Will error if configuration is incorrect) and MetricsManager
-    AlertMannager.getInstance();
-    const metrics = MetricsMannager.getInstance();
+    AlertManager.getInstance();
+    const metrics = MetricsManager.getInstance();
     metrics.startServer();
 
     const latestBlock = await catchUp(provider);

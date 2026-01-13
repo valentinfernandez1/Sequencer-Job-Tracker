@@ -1,29 +1,34 @@
 {
-  "name": "challenge-backend-valentinfernandez1",
-  "version": "1.0.0",
-  "description": "Challenge: Automation Workable Alert",
-  "main": "index.js",
-  "repository": "git@github.com:wonderland-quests/challenge-backend-valentinfernandez1.git",
-  "type": "module",
-  "scripts": {
-    "build": "npx tsc",
-    "start": "node dist/index.js",
-    "dev": "npx tsx src/index.js",
-    "test:live": "npx tsx src/tests/test.js"
-  },
-  "author": "Valentin Fernandez <tinchofernandez8@gmail.com>",
-  "license": "MIT",
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "ethers": "^6.16.0",
-    "prom-client": "^15.1.3",
-    "typescript": "^5.9.3",
-    "zod": "^4.3.5"
-  },
-  "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
-    "@types/node": "^25.0.3",
-    "prettier": "2.8.8",
-    "solhint": "^6.0.2"
-  }
+    "name": "challenge-backend-valentinfernandez1",
+    "version": "1.0.0",
+    "description": "Challenge: Automation Workable Alert",
+    "main": "index.js",
+    "repository": "git@github.com:wonderland-quests/challenge-backend-valentinfernandez1.git",
+    "type": "module",
+    "scripts": {
+        "dev": "tsx src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "test": "vitest",
+        "test:unit": "vitest run",
+        "test:integration": "vitest run tests/integration"
+    },
+    "author": "Valentin Fernandez <tinchofernandez8@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "dotenv": "^17.2.3",
+        "ethers": "^6.16.0",
+        "prom-client": "^15.1.3",
+        "typescript": "^5.9.3",
+        "zod": "^4.3.5"
+    },
+    "devDependencies": {
+        "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+        "@types/node": "^25.0.3",
+        "@vitest/coverage-v8": "^4.0.17",
+        "prettier": "2.8.8",
+        "solhint": "^6.0.2",
+        "tsx": "^4.21.0",
+        "vitest": "^4.0.17"
+    }
 }

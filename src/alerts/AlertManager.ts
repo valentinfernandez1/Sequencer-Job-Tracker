@@ -7,8 +7,14 @@ export type AlertData = {
     blockNumber: number;
 };
 
-export class AlertMannager {
-    private static instance: AlertMannager | null = null;
+type ThirdPartyProviders = "discord" | "slack";
+
+export type AlertThirdPartyStatus = {
+    [K in ThirdPartyProviders]: boolean;
+};
+
+export class AlertManager {
+    private static instance: AlertManager | null = null;
     private discordWH!: string;
     private slackWH!: string;
 
@@ -17,7 +23,7 @@ export class AlertMannager {
 
         if (discordWH === undefined) {
             console.log(
-                "[DISCORD_WEBHOOK] ENV variable is not set. Slack notifications will be disabled",
+                "[ DISCORD_WEBHOOK ] ENV variable is not set. Slack notifications will be disabled",
             );
         } else if (discordWH) {
             if (!discordWH.includes("discord.com/api/webhooks/"))
@@ -36,12 +42,13 @@ export class AlertMannager {
         }
     }
 
-    static getInstance(): AlertMannager {
-        if (AlertMannager.instance) return AlertMannager.instance;
+    static getInstance(): AlertManager {
+        console.log(config.alerts);
+        if (AlertManager.instance) return AlertManager.instance;
 
-        const instance = new AlertMannager();
+        const instance = new AlertManager();
 
-        AlertMannager.instance = instance;
+        AlertManager.instance = instance;
         return instance;
     }
 
@@ -49,33 +56,45 @@ export class AlertMannager {
         return `ℹ️ *A Job has been worked:*\n- Keeper Network Id: ${w.network}\n- Job Address: ${w.address} - (https://etherscan.io/address/${w.address})\n- Block Number: ${w.blockNumber} - (https://etherscan.io/block/${w.blockNumber})`;
     }
 
-    public emitAlerts(workedJob: WorkedJob): void {
-        const alertMsg = AlertMannager.craftMsg(workedJob);
+    public emitAlerts(workedJob: WorkedJob): AlertThirdPartyStatus {
+        const alertMsg = AlertManager.craftMsg(workedJob);
+        console.log(
+            `[Job] A job has been found - address:${workedJob.address}, blockNumber${workedJob.blockNumber}, keeperNetworkId ${workedJob.network}`,
+        );
 
-        this.dispatchDiscordAlert(alertMsg);
-        this.dispatchSlackAlert(alertMsg);
-        return;
+        return {
+            discord: this.dispatchDiscordAlert(alertMsg),
+            slack: this.dispatchSlackAlert(alertMsg),
+        };
     }
 
-    private async dispatchDiscordAlert(msg: string) {
-        if (!this.discordWH) return;
+    // Sends POST request to Discord WebHook
+    // Returns false if the functionality is disabled
+    private dispatchDiscordAlert(msg: string): boolean {
+        if (!this.discordWH) return false;
 
-        await fetch(this.discordWH, {
+        fetch(this.discordWH, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 content: msg,
             }),
         });
+
+        return true;
     }
 
-    private async dispatchSlackAlert(msg: string) {
-        if (!this.slackWH) return;
+    // Sends POST request to Slack WebHook
+    // Returns false if the functionality is disabled
+    private dispatchSlackAlert(msg: string): boolean {
+        if (!this.slackWH) return false;
 
-        await fetch(this.slackWH, {
+        fetch(this.slackWH, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: msg }),
         });
+
+        return true;
     }
 }

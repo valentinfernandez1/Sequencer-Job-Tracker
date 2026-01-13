@@ -1,10 +1,10 @@
 import { Block, JsonRpcProvider } from "ethers";
 
 import { config } from "../config.js";
-import { MetricsMannager } from "../metrics/MetricsMannager.js";
+import { MetricsManager } from "../metrics/MetricsManager.js";
 import { findJobInBlock, handleFoundJob } from "./jobs.js";
 
-const metrics = MetricsMannager.getInstance();
+const metrics = MetricsManager.getInstance();
 
 export async function catchUp(provider: JsonRpcProvider): Promise<number> {
     let latestBlock = await provider.getBlockNumber();

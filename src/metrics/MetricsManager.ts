@@ -3,8 +3,8 @@ import client from "prom-client";
 
 import { config } from "../config.js";
 
-export class MetricsMannager {
-    private static instance: MetricsMannager | null = null;
+export class MetricsManager {
+    private static instance: MetricsManager | null = null;
     // Prometheus registry
     public readonly register = client.register;
 
@@ -22,28 +22,31 @@ export class MetricsMannager {
             prefix: "keeper_",
         });
 
+        // Amount of worked Jobs
         this.jobsWorkedCounter = new client.Counter({
             name: "keeper_jobs_worked_total",
             help: "Number of jobs successfully worked",
             labelNames: ["job"],
         });
 
+        // Latest proccessed block
         this.currentBlockGauge = new client.Gauge({
             name: "keeper_current_block",
             help: "Latest block processed by the keeper",
         });
 
+        // Amount of blocks processed by the worker
         this.blocksProcessedCounter = new client.Counter({
             name: "keeper_blocks_processed_total",
             help: "Total number of blocks processed",
         });
     }
 
-    static getInstance(): MetricsMannager {
-        if (!MetricsMannager.instance) {
-            MetricsMannager.instance = new MetricsMannager();
+    static getInstance(): MetricsManager {
+        if (!MetricsManager.instance) {
+            MetricsManager.instance = new MetricsManager();
         }
-        return MetricsMannager.instance;
+        return MetricsManager.instance;
     }
 
     startServer(): void {
@@ -66,5 +69,10 @@ export class MetricsMannager {
         this.server.listen(port, () => {
             console.log(`[metrics] Prometheus listening on :${port}/metrics`);
         });
+    }
+
+    stopServer(): void {
+        if (this.server) this.server.close();
+        return;
     }
 }
