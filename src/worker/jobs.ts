@@ -80,7 +80,17 @@ export async function findJobInBlock(
         break;
     }
 
-    return WorkedJobSchema.parse(workedJob);
+    const parsedJob = WorkedJobSchema.safeParse(workedJob);
+
+    if (!parsedJob.success) {
+        console.warn("[ JOB_INSPECTOR ] Invalid WorkedJob", {
+            errors: parsedJob.error.issues,
+            workedJob,
+        });
+        MetricsManager.getInstance().validationErrorsCounter.inc();
+        return null;
+    }
+    return parsedJob.data;
 }
 
 export async function handleFoundJob(workedJob: WorkedJob) {

@@ -12,6 +12,7 @@ export class MetricsManager {
     public readonly jobsWorkedCounter: client.Counter<"job">;
     public readonly currentBlockGauge: client.Gauge;
     public readonly blocksProcessedCounter: client.Counter;
+    public readonly validationErrorsCounter: client.Counter;
 
     // HTTP server for Prometheus to collect the metrics
     private server?: http.Server;
@@ -22,23 +23,25 @@ export class MetricsManager {
             prefix: "keeper_",
         });
 
-        // Amount of worked Jobs
         this.jobsWorkedCounter = new client.Counter({
             name: "keeper_jobs_worked_total",
             help: "Number of jobs successfully worked",
             labelNames: ["job"],
         });
 
-        // Latest proccessed block
         this.currentBlockGauge = new client.Gauge({
             name: "keeper_current_block",
             help: "Latest block processed by the keeper",
         });
 
-        // Amount of blocks processed by the worker
         this.blocksProcessedCounter = new client.Counter({
             name: "keeper_blocks_processed_total",
             help: "Total number of blocks processed",
+        });
+
+        this.validationErrorsCounter = new client.Counter({
+            name: "keeper_validation_errors_total",
+            help: "Total number of validation errors",
         });
     }
 
