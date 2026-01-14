@@ -27,11 +27,11 @@ npm install
 
 ## Configuration
 
-The project requires a set of environment variables, stored in a .env file at the root of the project. A full example of how to structure the file can be found in [./env.example](.env.example).
+The project requires a set of environment variables, stored in a .env file at the root of the project. A full example of how to structure the file can be found in [./env.example](.env.example). You can copy this file and adjust the values as needed for your environment.
 
-Some variables depend on external services:
+Some variables require access to external services and may need additional setup:
 
--   **Ethereum node**: Needed for blockchain interaction (e.g., ETH_RPC)
+-   **Ethereum node**: Needed for blockchain interaction (`ETH_RPC`)
 -   **Alert providers**: Required to use Discord and Slack alerts. For more information on how to set them up follow the [alert providers guide](./docs/alerts.md).
 
 Make sure all required variables are set before running the project or tests.
@@ -52,6 +52,8 @@ From the root of the project, run:
 
 ```bash
 docker compose up --build
+# or if its already built
+docker compose up
 ```
 
 This will start:
