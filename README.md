@@ -55,7 +55,7 @@ The easiest way to run the Keeper Network Monitor and its dependencies is with D
 From the root of the project, run:
 
 ```bash
-docker-compose up -d
+docker compose up --build
 ```
 
 This will start:
