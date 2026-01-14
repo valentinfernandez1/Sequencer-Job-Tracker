@@ -4,11 +4,11 @@
 
 The Keeper Network Monitor is a service designed to monitor on-chain MakerDAO jobs. It inspects blocks to find if any active jobs that have been set up in the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#code) have been worked, collects and exposes metrics for Prometheus and handles alerts through discord and slack.
 
-On start up it will check for the last X amout of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
+On start up it will check for the last X amount of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
 
 #### Personal Notes
 
-Through the development process I made a few design desitions, to learn more head over to the [personal notes page](./docs/personal_notes.md).
+Through the development process I made a few design decisions, to learn more head over to the [personal notes page](./docs/personal_notes.md).
 
 ## Installation
 
@@ -88,7 +88,7 @@ curl -L https://foundry.paradigm.xyz | bash
 foundryup
 ```
 
-Make sure anvil is available (It might requires bash to be restart it)
+Make sure anvil is available (It might requires bash to be restarted)
 
 ```bash
 anvil --version
