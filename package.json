@@ -9,7 +9,7 @@
         "dev": "tsx src/server.ts",
         "build": "tsc",
         "start": "node dist/server.js",
-        "test": "yarn build && yarn test:unit",
+        "test": "yarn build && yarn test:unit && yarn test:integration",
         "test:unit": "NODE_ENV=test vitest run ./src/tests/unit",
         "test:integration": "yarn build && dotenv -e .env.integration -- node ./dist/scripts/run-integration-tests.js"
     },

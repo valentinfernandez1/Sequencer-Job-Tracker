@@ -1,41 +1,117 @@
 # Challenge: Automation Workable Alert
 
-## **Context**
+## Project Overview
 
-MakerDAO has several jobs which require onchain automation. In interest of decentralisation they have built a [`Sequencer`](https://github.com/makerdao/dss-cron/blob/master/src/Sequencer.sol), in charge of supporting multiple Keeper Networks to work.
+The Keeper Network Monitor is a service designed to monitor on-chain MakerDAO jobs. It inspects blocks to find if any active jobs that have been set up in the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#code) have been worked, collects and exposes metrics for Prometheus and handles alerts through discord and slack.
 
-Keeper Networks will be required to watch the `activeJobs` array in the `Sequencer` and find all instances of available jobs. All jobs will be deployed contracts which implement the [`IJob`](https://github.com/makerdao/dss-cron/blob/master/src/interfaces/IJob.sol) interface.
+On start up it will check for the last X amout of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
 
-## Contracts
+#### Personal Notes
 
-Sequencer: https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#code
+Through the development process I made a few design desitions, to learn more head over to the [personal notes page](./docs/personal_notes.md).
 
-## Challenge goal
+## Installation
 
-- Objective: Develop a long-running Node.js process using TypeScript that, upon the arrival of each new block, sends an alert (with details) if any currently active Maker job has been worked. Additionally, when the process starts, it should also check and notify if any jobs have been worked within the past 1,000 blocks.
-- Deployment: Use Docker for the deployment.
-- Notification: You should implement at least two way to notify the user. (We suggest Discord and Slack)
+Clone the repository
 
-## Mandatory Requirements
+```bash
+git clone https://github.com/wonderland-quests/challenge-backend-valentinfernandez1.git
+cd challenge-backend-valentinfernandez1
+```
 
-You must utilize the following methods from the Sequencer contract:
+Install the dependencies
 
-- `numJobs()`
-- `jobAt(uint256 _index)`
+```bash
+# Install dependencies
+yarn install
 
-## Criteria
+# OR with npm
+npm install
+```
 
-At Wonderland we strive for excellence in every single thing we do. That’s why while looking at your challenge, besides working correctly, we will also take into account:
+## Configuration
 
-- **Efficiency**: Can you reduce those RPC calls? 👀
-- **Best practices**: Good error handling, a modular code structure, and overall awesome code.
-- **Tests, tests, and tests**: You should at least write unit tests to cover the key functionalities.
-- **Documentation**: Does your README explain how to run your project and what it does? Is your code clear and explained?
+The project requires a set of environment variables, stored in a .env file at the root of the project. A full example of how to structure the file can be found in [./env.example](.env.example).
 
-## Deliverables
+Some variables depend on external services:
 
-A PR to this repository containing the developed code, including instructions on how to set up and run the application.
+-   **Ethereum node**: Needed for blockchain interaction (e.g., ETH_RPC)
+-   **Alert providers**: Required to use Discord and Slack alerts. For more information on how to set them up follow the [alert providers guide](./docs/alerts.md).
 
-## Expectations
+Make sure all required variables are set before running the project or tests.
 
-We expect this challenge to take between 10 to 16 hours of work.
+## How to run
+
+The easiest way to run the Keeper Network Monitor and its dependencies is with Docker Compose.
+
+### 1. Prerequisites
+
+-   Docker installed
+-   Docker Compose installed
+-   A configured .env file. (See [Configuration](#configuration))
+
+### 2. Start the services
+
+From the root of the project, run:
+
+```bash
+docker-compose up -d
+```
+
+This will start:
+
+-   keeper-network-monitor: the keeper network monitor application.
+-   prometheus: for collecting and visualizing metrics. For more information on how to visualize the metrics follow the [prometheus guide](./docs/prometheus.md).
+
+## Running tests
+
+This project uses Vitest for running the Tests. Tests are split into unit tests and integration tests.
+
+### Unit Tests
+
+Run all unit tests:
+
+```bash
+yarn run test:unit
+#or
+npm run test:unit
+```
+
+### Integration Tests
+
+Integration tests require a forked Ethereum network to simulate real blockchain interactions. For this reason [Anvil](https://github.com/foundry-rs/foundry) is required as it allow to run forked mainnet state locally.
+
+#### Installing Anvil
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+Make sure anvil is available (It might requires bash to be restart it)
+
+```bash
+anvil --version
+```
+
+#### Running Integration Tests
+
+Start the integration tests:
+
+```bash
+yarn test:integration
+#or
+npm run test:integration
+```
+
+The tests automatically start a forked Ethereum node using Anvil. Tests clean up the fork after running.
+
+### Running all tests
+
+To run both unit and integration tests:
+
+```bash
+yarn test
+#or
+npm run test
+```
