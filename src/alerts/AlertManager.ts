@@ -7,12 +7,16 @@ export type AlertData = {
     blockNumber: number;
 };
 
+// Currently supported third party providers
 type ThirdPartyProviders = "discord" | "slack";
 
 export type AlertThirdPartyStatus = {
     [K in ThirdPartyProviders]: boolean;
 };
 
+/**
+ * Singleton Class that manages alert notifications to Discord and Slack webhooks.
+ */
 export class AlertManager {
     private static instance: AlertManager | null = null;
     private discordWH!: string;
@@ -42,6 +46,9 @@ export class AlertManager {
         }
     }
 
+    /**
+     * Return the singleton AlertManager instance.
+     */
     static getInstance(): AlertManager {
         if (AlertManager.instance) return AlertManager.instance;
 
@@ -55,6 +62,9 @@ export class AlertManager {
         return `ℹ️ *A Job has been worked:*\n- Keeper Network Id: ${w.network}\n- Job Address: ${w.address} - (https://etherscan.io/address/${w.address})\n- Block Number: ${w.blockNumber} - (https://etherscan.io/block/${w.blockNumber})`;
     }
 
+    /**
+     * Sends alert notifications for a worked job to all configured providers
+     */
     public emitAlerts(workedJob: WorkedJob): AlertThirdPartyStatus {
         const alertMsg = AlertManager.craftMsg(workedJob);
         console.log(
@@ -67,8 +77,9 @@ export class AlertManager {
         };
     }
 
-    // Sends POST request to Discord WebHook
-    // Returns false if the functionality is disabled
+    /**
+     * Sends alert to Discord webhook. Returns false if functionality disabled
+     */
     private dispatchDiscordAlert(msg: string): boolean {
         if (!this.discordWH) return false;
 
@@ -83,8 +94,9 @@ export class AlertManager {
         return true;
     }
 
-    // Sends POST request to Slack WebHook
-    // Returns false if the functionality is disabled
+    /**
+     * Sends alert to slack webhook. Returns false if functionality disabled
+     */
     private dispatchSlackAlert(msg: string): boolean {
         if (!this.slackWH) return false;
 

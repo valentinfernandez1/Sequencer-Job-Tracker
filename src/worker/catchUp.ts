@@ -6,6 +6,10 @@ import { findJobInBlock, handleFoundJob } from "./jobs.js";
 
 const metrics = MetricsManager.getInstance();
 
+/**
+ * Processes historical blocks from configured depth to current block.
+ * Fetches and inspects blocks in batches
+ */
 export async function catchUp(
     provider: JsonRpcProvider,
 ): Promise<{ latestBlock: number; amountFoundJobs: number }> {
@@ -18,6 +22,7 @@ export async function catchUp(
 
     const { batchPullAmount, rateLimitingDelay } = config.eth;
     while (currentBlock <= latestBlock) {
+        // Calculate batch size (either full batch or remaining blocks)
         const amountBlocks =
             latestBlock - currentBlock + 1 > batchPullAmount
                 ? batchPullAmount
@@ -61,21 +66,27 @@ export async function catchUp(
     return { latestBlock, amountFoundJobs };
 }
 
+/**
+ * Fetches multiple blocks in parallel for performance.
+ */
 export async function bulkPullBlocks(
     provider: JsonRpcProvider,
     fromBlock: number,
     amountBlocks: number,
 ): Promise<(Block | null)[]> {
-    // Query blocks in parallel for better performance
     const toBlock = fromBlock + amountBlocks;
     const blockPromises = [];
     for (let i = fromBlock; i < toBlock; i++) {
-        blockPromises.push(provider.getBlock(i, true));
+        blockPromises.push(provider.getBlock(i, true)); // true = prefetch transactions
     }
 
     return await Promise.all(blockPromises);
 }
 
+/**
+ * Inspects multiple blocks in parallel to find worked jobs.
+ * Updates metrics and handles found jobs automatically.
+ */
 export async function bulkInspectBlock(
     provider: JsonRpcProvider,
     blocks: (Block | null)[],

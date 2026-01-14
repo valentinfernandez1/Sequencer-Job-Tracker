@@ -13,6 +13,13 @@ async function main() {
     await startKeeper(eth.getProvider());
 }
 
+/**
+ * Starts the keeper service that monitors blockchain blocks for job transactions.
+ * First catches up on historical blocks (configured via CATCH_UP_DEPTH), then
+ * subscribes to new blocks in real time.
+ *
+ * The block subscription runs indefinitely until the provider connection is closed.
+ */
 export async function startKeeper(provider: JsonRpcProvider) {
     const metrics = MetricsManager.getInstance();
     // Catch up with historical data
@@ -36,7 +43,10 @@ export async function startKeeper(provider: JsonRpcProvider) {
     });
 }
 
-// Initialize AlertManager (Will error if configuration is incorrect) and MetricsManager
+/**
+ * Initialize AlertManager (Will error if configuration is incorrect)
+ * and MetricsManager + metrics server (for prometheus to pull data from)
+ */
 export function startInfraServices() {
     AlertManager.getInstance();
     const metrics = MetricsManager.getInstance();

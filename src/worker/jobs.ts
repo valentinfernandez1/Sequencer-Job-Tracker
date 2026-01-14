@@ -6,6 +6,7 @@ import { config } from "../config.js";
 import { initContract } from "../eth/contracts/initContract.js";
 import { MetricsManager } from "../metrics/MetricsManager.js";
 
+/** Set of active job contract addresses */
 export type Jobs = Set<string>;
 
 export const WorkedJobSchema = z.object({
@@ -16,6 +17,10 @@ export const WorkedJobSchema = z.object({
 
 export type WorkedJob = z.infer<typeof WorkedJobSchema>;
 
+/**
+ * Fetches all active job addresses from the sequencer at a specific block.
+ * Makes use of the Multicall3 contract for efficient batched calls.
+ */
 export async function findActiveJobs(provider: JsonRpcProvider, blockTag: BlockTag): Promise<Jobs> {
     const { sequencerAddress, multiCallAddress } = config.eth;
     const sequencer = initContract(provider, sequencerAddress, "SEQUENCER");
@@ -25,6 +30,7 @@ export async function findActiveJobs(provider: JsonRpcProvider, blockTag: BlockT
 
     if (!numJobs) return new Set();
 
+    // Build multicall batch to fetch all job addresses in a single RPC call
     const calls = [];
     for (let i = 0n; i < numJobs; i++) {
         calls.push({
@@ -39,7 +45,7 @@ export async function findActiveJobs(provider: JsonRpcProvider, blockTag: BlockT
     const jobs: Jobs = new Set();
 
     results.forEach((r: any) => {
-        // Decode the address from the multicall response
+        // r[1] contains the returnData from the multicall response
         const address = sequencer.interface.decodeFunctionResult("jobAt", r[1])[0];
         jobs.add(address.toLowerCase());
     });
@@ -47,6 +53,9 @@ export async function findActiveJobs(provider: JsonRpcProvider, blockTag: BlockT
     return jobs;
 }
 
+/*
+ * Searches a block for transactions that worked a job.
+ */
 export async function findJobInBlock(
     provider: JsonRpcProvider,
     block: Block,
@@ -56,16 +65,17 @@ export async function findJobInBlock(
 
     let workedJob: WorkedJob | null = null;
     for (const tx of block.prefetchedTransactions) {
+        // Skip transactions not targeting an active job
         if (!tx.to || !jobs.has(tx.to.toLowerCase())) continue;
 
         const address = tx.to.toLowerCase();
         const jobContract = initContract(provider, address, "JOB");
 
+        // Parse transaction to check if it's calling the "work" function
         const decoded = jobContract.interface.parseTransaction({
             data: tx.data,
             value: tx.value,
         });
-
         if (!decoded || decoded.name !== "work") continue;
 
         const sequencer = initContract(provider, config.eth.sequencerAddress, "SEQUENCER");
@@ -94,10 +104,10 @@ export async function findJobInBlock(
     return parsedJob.data;
 }
 
+/**
+ * Handles a found job by sending alerts and updating metrics.
+ */
 export async function handleFoundJob(workedJob: WorkedJob) {
-    // Send alerts to third party webhooks
     AlertManager.getInstance().emitAlerts(workedJob);
-
-    // Prometheous metric
     MetricsManager.getInstance().jobsWorkedCounter.inc();
 }

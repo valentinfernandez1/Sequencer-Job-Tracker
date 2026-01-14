@@ -3,9 +3,12 @@ import client from "prom-client";
 
 import { config } from "../config.js";
 
+/**
+ * Singleton Class that manages Prometheus metrics and HTTP server for scraping.
+ */
 export class MetricsManager {
     private static instance: MetricsManager | null = null;
-    // Prometheus registry
+    /** Prometheus registry*/
     public readonly register = client.register;
 
     // Metrics
@@ -14,7 +17,7 @@ export class MetricsManager {
     public readonly blocksProcessedCounter: client.Counter;
     public readonly validationErrorsCounter: client.Counter;
 
-    // HTTP server for Prometheus to collect the metrics
+    /** HTTP server exposing /metrics endpoint */
     private server?: http.Server;
 
     private constructor() {
@@ -45,6 +48,10 @@ export class MetricsManager {
         });
     }
 
+    /**
+     * Returns the singleton MetricsManager instance.
+     * Creates and initializes metrics on first call.
+     */
     static getInstance(): MetricsManager {
         if (!MetricsManager.instance) {
             MetricsManager.instance = new MetricsManager();
@@ -52,6 +59,9 @@ export class MetricsManager {
         return MetricsManager.instance;
     }
 
+    /**
+     * Starts the HTTP server to expose metrics at /metrics endpoint.
+     */
     startServer(): void {
         if (this.server) return;
 
@@ -74,6 +84,9 @@ export class MetricsManager {
         });
     }
 
+    /**
+     * Stops the metrics HTTP server if running.
+     */
     stopServer(): void {
         if (this.server) this.server.close();
         return;

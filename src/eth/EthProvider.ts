@@ -2,12 +2,18 @@ import { ethers, JsonRpcProvider } from "ethers";
 
 import { config } from "../config.js";
 
+/**
+ * Singleton Class that manages Ethereum JSON RPC provider instance.
+ */
 export class EthProvider {
     private static instance: EthProvider | null = null;
     private provider!: JsonRpcProvider;
 
     private constructor() {}
 
+    /**
+     * Return the singleton EthProvider instance.
+     */
     static async getInstance(): Promise<EthProvider> {
         if (EthProvider.instance) return EthProvider.instance;
         const instance = new EthProvider();
@@ -17,6 +23,9 @@ export class EthProvider {
         return instance;
     }
 
+    /**
+     * Initialize the provider and validate RPC connection.
+     */
     private async init() {
         const { rpc } = config.eth;
         const provider = new ethers.JsonRpcProvider(rpc);

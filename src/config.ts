@@ -1,11 +1,15 @@
 import { z, ZodError } from "zod";
 
+// Load environment variables in non-test environments
 if (process.env.NODE_ENV !== "test") {
     try {
         process.loadEnvFile();
     } catch {}
 }
 
+/**
+ * Environment variable validations
+ */
 export const EnvSchema = z.object({
     ETH_RPC: z.url(),
 
@@ -22,19 +26,31 @@ export const EnvSchema = z.object({
 });
 
 type Config = {
+    /** Ethereum blockchain configuration */
     eth: {
+        /** RPC endpoint URL for blockchain connection */
         rpc: string;
+        /** Contract address of the sequencer */
         sequencerAddress: string;
+        /** Contract address for Multicall3 (used for batched calls) */
         multiCallAddress: string;
+        /** Number of historical blocks to process during catchUp phase */
         catchUpDepth: number;
+        /** Number of blocks to fetch in parallel per batch */
         batchPullAmount: number;
+        /** Delay in milliseconds between batch requests to avoid rate limiting */
         rateLimitingDelay: number;
     };
+    /** Alert notification configuration */
     alerts: {
+        /** Discord webhook URL for sending alerts (optional) */
         discordWH?: string;
+        /** Slack webhook URL for sending alerts (optional) */
         slackWH?: string;
     };
+    /** Metrics and monitoring configuration */
     metrics: {
+        /** Port number for Prometheus metrics endpoint */
         port: number;
     };
 };
