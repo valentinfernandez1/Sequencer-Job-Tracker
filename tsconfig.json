@@ -9,9 +9,10 @@
         "rootDir": "./src",
         "skipLibCheck": true,
         "strict": true,
+        "noUnusedParameters": true,
         "sourceMap": true,
         "outDir": "./dist"
     },
-    "include": ["./src/**/*.ts"],
+    "include": ["./src/**/*.ts", "src/tests/**/*.ts"],
     "exclude": ["node_modules"]
 }

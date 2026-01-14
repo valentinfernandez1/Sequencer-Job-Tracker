@@ -70,7 +70,7 @@ export class MetricsManager {
         });
 
         this.server.listen(port, () => {
-            console.log(`[metrics] Prometheus listening on :${port}/metrics`);
+            console.log(`[ METRIC_MANAGER ] Prometheus listening on :${port}/metrics`);
         });
     }
 

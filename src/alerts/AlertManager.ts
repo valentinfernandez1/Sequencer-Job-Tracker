@@ -58,7 +58,7 @@ export class AlertManager {
     public emitAlerts(workedJob: WorkedJob): AlertThirdPartyStatus {
         const alertMsg = AlertManager.craftMsg(workedJob);
         console.log(
-            `[Job] A job has been found - address:${workedJob.address}, blockNumber${workedJob.blockNumber}, keeperNetworkId ${workedJob.network}`,
+            `[ ALERT_MANAGER ] A job has been found - address:${workedJob.address}, blockNumber${workedJob.blockNumber}, keeperNetworkId ${workedJob.network}`,
         );
 
         return {

@@ -6,19 +6,22 @@ import { findJobInBlock, handleFoundJob } from "./jobs.js";
 
 const metrics = MetricsManager.getInstance();
 
-export async function catchUp(provider: JsonRpcProvider): Promise<void> {
+export async function catchUp(
+    provider: JsonRpcProvider,
+): Promise<{ latestBlock: number; amountFoundJobs: number }> {
     let latestBlock = await provider.getBlockNumber();
     let currentBlock = latestBlock - config.eth.catchUpDepth;
+    let amountFoundJobs = 0;
 
     const startTime = Date.now();
     const startBlock = currentBlock;
 
     const { batchPullAmount, rateLimitingDelay } = config.eth;
-    while (currentBlock < latestBlock) {
+    while (currentBlock <= latestBlock) {
         const amountBlocks =
-            latestBlock - currentBlock > batchPullAmount
+            latestBlock - currentBlock + 1 > batchPullAmount
                 ? batchPullAmount
-                : latestBlock - currentBlock;
+                : latestBlock - currentBlock + 1;
 
         const eta = estimateCatchUpTime(currentBlock, latestBlock, startTime, startBlock);
 
@@ -30,14 +33,14 @@ export async function catchUp(provider: JsonRpcProvider): Promise<void> {
 
         console.log(
             `[ CATCH_UP ] Blocks (${currentBlock}/${
-                currentBlock + amountBlocks
+                currentBlock + amountBlocks - 1
             }) Received - Inspecting for Job transactions`,
         );
 
         // Delay between batches to avoid rate limiting
         await new Promise((resolve) => setTimeout(resolve, rateLimitingDelay));
 
-        await bulkInspectBlock(provider, blocks);
+        amountFoundJobs += await bulkInspectBlock(provider, blocks);
 
         // Delay between batches to avoid rate limiting
         await new Promise((resolve) => setTimeout(resolve, rateLimitingDelay));
@@ -55,10 +58,10 @@ export async function catchUp(provider: JsonRpcProvider): Promise<void> {
     }
 
     console.log(` --- [ CATCH_UP ] Phase Completed - Latest Inspected Block ${latestBlock} ---`);
-    return;
+    return { latestBlock, amountFoundJobs };
 }
 
-async function bulkPullBlocks(
+export async function bulkPullBlocks(
     provider: JsonRpcProvider,
     fromBlock: number,
     amountBlocks: number,
@@ -66,29 +69,38 @@ async function bulkPullBlocks(
     // Query blocks in parallel for better performance
     const toBlock = fromBlock + amountBlocks;
     const blockPromises = [];
-    for (let i = fromBlock; i <= toBlock; i++) {
+    for (let i = fromBlock; i < toBlock; i++) {
         blockPromises.push(provider.getBlock(i, true));
     }
 
     return await Promise.all(blockPromises);
 }
 
-async function bulkInspectBlock(provider: JsonRpcProvider, blocks: (Block | null)[]) {
+export async function bulkInspectBlock(
+    provider: JsonRpcProvider,
+    blocks: (Block | null)[],
+): Promise<number> {
     const inspectPromises = [];
+    let amountFoundJobs = 0;
+
+    if (!blocks.length) return 0;
 
     for (const block of blocks) {
-        if (!block) return;
+        if (!block) continue;
         inspectPromises.push(
             findJobInBlock(provider, block).then((maybeJob) => {
                 metrics.blocksProcessedCounter.inc();
 
-                return maybeJob ? handleFoundJob(maybeJob) : null;
+                if (!maybeJob) return;
+
+                amountFoundJobs++;
+                handleFoundJob(maybeJob);
             }),
         );
     }
 
     await Promise.all(inspectPromises);
-    return;
+    return amountFoundJobs;
 }
 
 export function estimateCatchUpTime(

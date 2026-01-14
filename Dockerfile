@@ -11,4 +11,4 @@ RUN yarn build
 
 EXPOSE 9100
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/server.js"]

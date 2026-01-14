@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { handleFoundJob } from "./jobs.js";
+import { handleFoundJob } from "../../../worker/jobs.js";
 
 const emitAlerts = vi.fn();
 const inc = vi.fn();
 
-vi.mock("../config.js", () => ({
+vi.mock("../../../config.js", () => ({
     config: {
         alerts: {},
         metrics: { port: 9100 },
     },
 }));
 
-vi.mock("../alerts/AlertManager.js", () => ({
+vi.mock("../../../alerts/AlertManager.js", () => ({
     AlertManager: {
         getInstance: () => ({
             emitAlerts,
@@ -20,7 +20,7 @@ vi.mock("../alerts/AlertManager.js", () => ({
     },
 }));
 
-vi.mock("../metrics/MetricsManager.js", () => ({
+vi.mock("../../../metrics/MetricsManager.js", () => ({
     MetricsManager: {
         getInstance: () => ({
             jobsWorkedCounter: { inc },
@@ -30,7 +30,7 @@ vi.mock("../metrics/MetricsManager.js", () => ({
 
 // Only unit test for handleFoundJob() as the rest of the functions are
 // very RPC heavy and mocking would not necessarily be the best approach
-// intead they are part of the integration tests on `tests/integration/eth`
+// intead they are part of the integration tests on `tests/integration/jobs.test.ts`
 describe("jobs", () => {
     beforeEach(() => {
         vi.clearAllMocks();

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EthProvider } from "./EthProvider.js";
+import { EthProvider } from "../../../eth/EthProvider.js";
 
-vi.mock("../config.js", () => ({
+vi.mock("../../../config.js", () => ({
     config: {
         eth: {
             rpc: "http://localhost:8545",

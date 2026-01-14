@@ -2,16 +2,16 @@
     "name": "challenge-backend-valentinfernandez1",
     "version": "1.0.0",
     "description": "Challenge: Automation Workable Alert",
-    "main": "index.js",
+    "main": "server.js",
     "repository": "git@github.com:wonderland-quests/challenge-backend-valentinfernandez1.git",
     "type": "module",
     "scripts": {
-        "dev": "tsx src/index.ts",
+        "dev": "tsx src/server.ts",
         "build": "tsc",
-        "start": "node dist/index.js",
+        "start": "node dist/server.js",
         "test": "yarn build && yarn test:unit",
-        "test:unit": "NODE_ENV=test vitest run",
-        "test:integration": "vitest run tests/integration"
+        "test:unit": "NODE_ENV=test vitest run ./src/tests/unit",
+        "test:integration": "yarn build && dotenv -e .env.integration -- node ./dist/scripts/run-integration-tests.js"
     },
     "author": "Valentin Fernandez <tinchofernandez8@gmail.com>",
     "license": "MIT",
@@ -26,6 +26,7 @@
         "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
         "@types/node": "^25.0.3",
         "@vitest/coverage-v8": "^4.0.17",
+        "dotenv-cli": "^11.0.0",
         "prettier": "2.8.8",
         "tsx": "^4.21.0",
         "vitest": "^4.0.17"

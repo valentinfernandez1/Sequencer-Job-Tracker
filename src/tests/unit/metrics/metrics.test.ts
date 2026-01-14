@@ -2,9 +2,9 @@ import http from "http";
 import client from "prom-client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MetricsManager } from "./MetricsManager.js";
+import { MetricsManager } from "../../../metrics/MetricsManager.js";
 
-vi.mock("../config.js", () => ({
+vi.mock("../../../config.js", () => ({
     config: {
         metrics: {
             port: 9101,
@@ -37,7 +37,7 @@ describe("MetricsManager", () => {
     });
 
     it("exposes /metrics endpoint", async () => {
-        const { MetricsManager } = await import("./MetricsManager.js");
+        const { MetricsManager } = await import("../../../metrics/MetricsManager.js");
         const manager = MetricsManager.getInstance();
 
         manager.startServer();

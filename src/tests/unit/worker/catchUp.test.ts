@@ -3,15 +3,15 @@
 
 import { describe, expect, it, vi } from "vitest";
 
-import { estimateCatchUpTime } from "./catchUp.js";
+import { estimateCatchUpTime } from "../../../worker/catchUp.js";
 
-vi.mock("../config.js", () => ({
+vi.mock("../../../config.js", () => ({
     config: {},
 }));
 
 // Only unit test for estimateCatchUpTime() as the rest of the functions are
 // very RPC heavy and mocking would not necessarily be the best approach
-// intead they are part of the integration tests on `tests/integration/eth`
+// intead they are part of the integration tests on `tests/integration/catchUp.test.ts`
 describe("catchUp", () => {
     it("estimateCatchUpTime returns infinity when no blocks have been processed", () => {
         expect(estimateCatchUpTime(100, 200, Date.now(), 100)).toBe(Infinity);

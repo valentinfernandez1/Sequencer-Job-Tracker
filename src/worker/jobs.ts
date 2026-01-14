@@ -38,7 +38,7 @@ export async function findActiveJobs(provider: JsonRpcProvider, blockTag: BlockT
 
     const jobs: Jobs = new Set();
 
-    results.forEach((r: any, i: number) => {
+    results.forEach((r: any) => {
         // Decode the address from the multicall response
         const address = sequencer.interface.decodeFunctionResult("jobAt", r[1])[0];
         jobs.add(address.toLowerCase());
@@ -52,7 +52,7 @@ export async function findJobInBlock(
     block: Block,
 ): Promise<WorkedJob | null> {
     if (!block.prefetchedTransactions) return null;
-    const jobs = await findActiveJobs(provider, "latest");
+    const jobs = await findActiveJobs(provider, block.number);
 
     let workedJob: WorkedJob | null = null;
     for (const tx of block.prefetchedTransactions) {
@@ -79,6 +79,7 @@ export async function findJobInBlock(
 
         break;
     }
+    if (!workedJob) return workedJob;
 
     const parsedJob = WorkedJobSchema.safeParse(workedJob);
 

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { WorkedJob } from "../worker/jobs.js";
-import { AlertThirdPartyStatus } from "./AlertManager.js";
+import { AlertThirdPartyStatus } from "../../../alerts/AlertManager.js";
+import { WorkedJob } from "../../../worker/jobs.js";
 
-vi.mock("../config.js", () => ({
+vi.mock("../../../config.js", () => ({
     config: {
         alerts: {
             discordWH: "https://discord.com/api/webhooks/test",
@@ -27,14 +27,14 @@ describe("AlertManager", () => {
     });
 
     it("returns the same instance (Singleton)", async () => {
-        const { AlertManager } = await import("./AlertManager.js");
+        const { AlertManager } = await import("../../../alerts/AlertManager.js");
         const a = AlertManager.getInstance();
 
         expect(a).toBe(AlertManager.getInstance());
     });
 
     it("sends Discord and slack alerts", async () => {
-        const { AlertManager } = await import("./AlertManager.js");
+        const { AlertManager } = await import("../../../alerts/AlertManager.js");
         const expectedResponse: AlertThirdPartyStatus = { discord: true, slack: true };
 
         const manager = AlertManager.getInstance();
@@ -61,7 +61,7 @@ describe("AlertManager", () => {
     });
 
     it("disables alerts when hook url is not provided", async () => {
-        vi.doMock("../config.js", () => ({
+        vi.doMock("../../../config.js", () => ({
             config: {
                 alerts: {
                     discordWH: null,
@@ -70,7 +70,7 @@ describe("AlertManager", () => {
             },
         }));
 
-        const { AlertManager } = await import("./AlertManager.js");
+        const { AlertManager } = await import("../../../alerts/AlertManager.js");
         const expectedResponse: AlertThirdPartyStatus = { discord: false, slack: false };
 
         const manager = AlertManager.getInstance();
@@ -81,7 +81,7 @@ describe("AlertManager", () => {
     });
 
     it("It errors on incorrect discord webhook url provided", async () => {
-        vi.doMock("../config.js", () => ({
+        vi.doMock("../../../config.js", () => ({
             config: {
                 alerts: {
                     discordWH: "NotWhURL.com",
@@ -90,15 +90,14 @@ describe("AlertManager", () => {
             },
         }));
 
-        const { AlertManager } = await import("./AlertManager.js");
-
+        const { AlertManager } = await import("../../../alerts/AlertManager.js");
         expect(() => AlertManager.getInstance()).toThrowError(
             "Invalid Discord Web Hook URL Provided",
         );
     });
 
     it("It errors on incorrect slack webhook url provided", async () => {
-        vi.doMock("../config.js", () => ({
+        vi.doMock("../../../config.js", () => ({
             config: {
                 alerts: {
                     discordWH: "https://discord.com/api/webhooks/test",
@@ -107,8 +106,7 @@ describe("AlertManager", () => {
             },
         }));
 
-        const { AlertManager } = await import("./AlertManager.js");
-
+        const { AlertManager } = await import("../../../alerts/AlertManager.js");
         expect(() => AlertManager.getInstance()).toThrowError(
             "Invalid Slack Web Hook URL Provided",
         );
