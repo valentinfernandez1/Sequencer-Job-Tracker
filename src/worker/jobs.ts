@@ -1,9 +1,9 @@
-import { Block, BlockTag, JsonRpcProvider } from "ethers";
+import { Block, BlockTag, Interface, JsonRpcProvider } from "ethers";
 import { z } from "zod";
 
 import { AlertManager } from "../alerts/AlertManager.js";
 import { config } from "../config.js";
-import { initContract } from "../eth/contracts/initContract.js";
+import { ContractAbiMapping, initContract } from "../eth/contracts/initContract.js";
 import { MetricsManager } from "../metrics/MetricsManager.js";
 
 /** Set of active job contract addresses */
@@ -61,28 +61,36 @@ export async function findJobInBlock(
     block: Block,
 ): Promise<WorkedJob | null> {
     if (!block.prefetchedTransactions) return null;
-    const jobs = await findActiveJobs(provider, block.number);
 
     let workedJob: WorkedJob | null = null;
     for (const tx of block.prefetchedTransactions) {
-        // Skip transactions not targeting an active job
-        if (!tx.to || !jobs.has(tx.to.toLowerCase())) continue;
+        // Attempt to find a transaction with the work() transaction signature
 
-        const address = tx.to.toLowerCase();
-        const jobContract = initContract(provider, address, "JOB");
+        // It must have been sent TO a smart contract address.
+        if (!tx.to) continue;
+        const recipientAddress = tx.to.toLowerCase();
+
+        const I_jobContract = new Interface(ContractAbiMapping.JOB);
 
         // Parse transaction to check if it's calling the "work" function
-        const decoded = jobContract.interface.parseTransaction({
+        const decoded = I_jobContract.parseTransaction({
             data: tx.data,
             value: tx.value,
         });
         if (!decoded || decoded.name !== "work") continue;
 
+        // A job has been found. Now verify whether that transaction matches one from
+        // the activeJobs registered in the sequencer.
+
+        const jobs = await findActiveJobs(provider, block.number);
+
+        if (!jobs.has(recipientAddress)) continue;
+
         const sequencer = initContract(provider, config.eth.sequencerAddress, "SEQUENCER");
         const network = await sequencer.getMaster();
 
         workedJob = {
-            address,
+            address: recipientAddress,
             blockNumber: block.number,
             network,
         };

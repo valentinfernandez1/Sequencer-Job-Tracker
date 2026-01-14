@@ -5,7 +5,7 @@ import MultiCall3Abi from "./MultiCall3.abi.json" with { type: "json" };
 import SequencerAbi from "./Sequencer.abi.json" with{ type: "json" };
 
 // Mapping of contract type and ABI
-const ContractAbiMapping = {
+export const ContractAbiMapping = {
     SEQUENCER: SequencerAbi,
     MULTICALL: MultiCall3Abi,
     JOB: JobAbi,

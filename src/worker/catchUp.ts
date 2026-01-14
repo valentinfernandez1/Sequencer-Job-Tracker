@@ -37,18 +37,15 @@ export async function catchUp(
         const blocks = await bulkPullBlocks(provider, currentBlock, amountBlocks);
 
         console.log(
-            `[ CATCH_UP ] Blocks (${currentBlock}/${
+            `[ CATCH_UP ] Retrieved Blocks (${currentBlock}/${
                 currentBlock + amountBlocks - 1
-            }) Received - Inspecting for Job transactions`,
+            }) Received - Inspecting for Job transactions\n`,
         );
 
         // Delay between batches to avoid rate limiting
         await new Promise((resolve) => setTimeout(resolve, rateLimitingDelay));
 
         amountFoundJobs += await bulkInspectBlock(provider, blocks);
-
-        // Delay between batches to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, rateLimitingDelay));
 
         currentBlock += amountBlocks;
 
@@ -62,7 +59,7 @@ export async function catchUp(
         }
     }
 
-    console.log(` --- [ CATCH_UP ] Phase Completed - Latest Inspected Block ${latestBlock} ---`);
+    console.log(`\n--- [ CATCH_UP ] Phase Completed - Latest Inspected Block ${latestBlock} ---\n`);
     return { latestBlock, amountFoundJobs };
 }
 

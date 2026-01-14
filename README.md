@@ -7,10 +7,12 @@ The Keeper Network Monitor is a service designed to monitor on-chain MakerDAO jo
 On start up it will check for the last X amount of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
 
 The way the worked Job detection works is the following:
+
 1. Query a block (either incomming or historical on catchUp phase) with all the transactions inside alongside their details.
-2. Query `numJobs()` and `jobAt()` from the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#events) to find the address of the active Jobs.
-3. Scan the block transactions in search of transactions that were made to one of the activeJob contracts with the function signature `work(...params)`.
-4. If a transaction is found the details are extracted and an alert is sent using a webhook to Discord and Slack. 
+2. Scan the block transactions in search of transactions with the function signature `work(...params)` that matches the [Job ABI interface](./src/eth/contracts/Job.abi.json).
+3. If a transaction with that signature is found then query `numJobs()` and `jobAt()` from the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#events) to find the address of the active Jobs.
+4. Compare the field `to` of the transaction to check whether it was sent to one of the active Jobs.
+5. Return the details of the worked job and dispatch alerts to Discord and Slack via WebHooks.
 
 ## Installation
 
@@ -89,10 +91,15 @@ Integration tests require a forked Ethereum network to simulate real blockchain 
 
 ```bash
 curl -L https://foundry.paradigm.xyz | bash
+
+# Close and reopen your terminal, or run:
+source ~/.bashrc   # or ~/.zshrc
+
+# Then
 foundryup
 ```
 
-Make sure anvil is available (It might requires bash to be restarted)
+Make sure anvil is available.
 
 ```bash
 anvil --version
