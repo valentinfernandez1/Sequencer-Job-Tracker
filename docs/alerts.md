@@ -22,15 +22,12 @@ Discord is very straight forward. You will need a Discord Server and a text chan
 Now Slack requires a bit more setup. On your Slack Workspace
 
 1. Go to the tools section and click on Apps:
-
-![alt text](assets/tools.png)
-
+   ![alt text](assets/tools.png)
 2. Search for Incomming WebHooks and add it to your slack workspace
    ![alt text](assets/apps.png)
 3. Open the Incomming WebHooks App and go to configuration
    ![alt text](assets/incomming-webhooks.png)
 4. Copy the WebHook URL and add it to the `.env` config under the `SLACK_WEBHOOK` key
    ![alt text](assets/sl-webhook.png)
-
 5. When running the Monitor you should see messages from the WebHook when a job is worked.
    ![alt text](assets/sl-notification.png)

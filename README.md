@@ -6,10 +6,6 @@ The Keeper Network Monitor is a service designed to monitor on-chain MakerDAO jo
 
 On start up it will check for the last X amount of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
 
-#### Personal Notes
-
-Through the development process I made a few design decisions, to learn more head over to the [personal notes page](./docs/personal_notes.md).
-
 ## Installation
 
 Clone the repository
