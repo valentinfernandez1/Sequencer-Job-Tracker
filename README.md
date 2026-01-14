@@ -6,6 +6,12 @@ The Keeper Network Monitor is a service designed to monitor on-chain MakerDAO jo
 
 On start up it will check for the last X amount of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
 
+The way the worked Job detection works is the following:
+1. Query a block (either incomming or historical on catchUp phase) with all the transactions inside alongside their details.
+2. Query `numJobs()` and `jobAt()` from the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#events) to find the address of the active Jobs.
+3. Scan the block transactions in search of transactions that were made to one of the activeJob contracts with the function signature `work(...params)`.
+4. If a transaction is found the details are extracted and an alert is sent using a webhook to Discord and Slack. 
+
 ## Installation
 
 Clone the repository
