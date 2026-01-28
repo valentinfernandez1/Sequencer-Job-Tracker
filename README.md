@@ -1,8 +1,8 @@
-# Challenge: Automation Workable Alert
+Sequencer Job Tracker
 
 ## Project Overview
 
-The Keeper Network Monitor is a service designed to monitor on-chain MakerDAO jobs. It inspects blocks to find if any active jobs that have been set up in the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#code) have been worked, collects and exposes metrics for Prometheus and handles alerts through discord and slack.
+The Sequencer Job Tracker is a service designed to monitor on-chain MakerDAO jobs. It inspects blocks to find if any active jobs that have been set up in the [Sequencer](https://etherscan.io/address/0x238b4E35dAed6100C6162fAE4510261f88996EC9#code) have been worked, collects and exposes metrics for Prometheus and handles alerts through discord and slack.
 
 On start up it will check for the last X amount of blocks (configured with CATCH_UP_DEPTH, see [Configuration](#configuration)) to verify if any jobs have been worked and then subscribe to block notifications to detect jobs on every block import.
 
@@ -46,7 +46,7 @@ Make sure all required variables are set before running the project or tests.
 
 ## How to run
 
-The easiest way to run the Keeper Network Monitor and its dependencies is with Docker Compose.
+The easiest way to run the Sequencer Job Tracker and its dependencies is with Docker Compose.
 
 ### 1. Prerequisites
 
