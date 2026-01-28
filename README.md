@@ -1,4 +1,4 @@
-Sequencer Job Tracker
+# Sequencer Job Tracker
 
 ## Project Overview
 
